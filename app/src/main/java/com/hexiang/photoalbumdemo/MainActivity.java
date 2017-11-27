@@ -1,5 +1,6 @@
 package com.hexiang.photoalbumdemo;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -42,20 +43,10 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.tv_start_album).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new PhotoAlbum(MainActivity.this)
+                startActivityForResult(new PhotoAlbum(MainActivity.this)
                         .addRemovePaths(list)
                         .setLimitCount(3)
-                        .startAlbum()
-                        .subscribe(new Action1<List<String>>() {
-                            @Override
-                            public void call(List<String> paths) {
-                                list.clear();
-                                list.addAll(paths);
-                                adapter.notifyDataChanged();
-                                Log.d("PhotoAlbum",list.toString());
-                            }
-                        });
-
+                        .getAlbumIntent(), 1000);
             }
         });
 
@@ -72,5 +63,17 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         gridView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1000 && resultCode == RESULT_OK) {
+            List<String> paths = PhotoAlbum.parseResult(data);
+            list.clear();
+            list.addAll(paths);
+            adapter.notifyDataChanged();
+            Log.d("PhotoAlbum", list.toString());
+        }
     }
 }

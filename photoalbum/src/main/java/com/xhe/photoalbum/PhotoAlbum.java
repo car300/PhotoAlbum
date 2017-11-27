@@ -6,17 +6,12 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
-import com.gengqiquan.result.RxActivityResult;
 import com.xhe.photoalbum.data.ThemeData;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import rx.Observable;
-import rx.functions.Func1;
 
 
 /**
@@ -194,7 +189,7 @@ public class PhotoAlbum {
     /**
      * 最终调用的启动相册
      */
-    public Observable<List<String>> startAlbum() {
+    public Intent getAlbumIntent() {
         ThemeData.init(new ThemeData.ThemeBuilder()
                 .backgroundColor(backgroundColor)
                 .titleBarColor(toolbarColor)
@@ -213,13 +208,6 @@ public class PhotoAlbum {
             throw new NullPointerException("context must be not null");
 
         intent.setClass(context, PhotoAlbumActivity.class);
-        return RxActivityResult.with(context)
-                .startActivityWithResult(intent)
-                .map(new Func1<Intent, List<String>>() {
-                    @Override
-                    public List<String> call(Intent intent) {
-                        return parseResult(intent);
-                    }
-                });
+        return intent;
     }
 }
