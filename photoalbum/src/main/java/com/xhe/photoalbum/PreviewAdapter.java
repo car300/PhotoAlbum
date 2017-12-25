@@ -1,15 +1,14 @@
 package com.xhe.photoalbum;
 
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
-import com.xhe.photoalbum.utils.ImageLoader;
+import com.xhe.photoalbum.utils.ImageDisplay;
 
 import java.util.List;
 
@@ -44,14 +43,7 @@ public class PreviewAdapter extends PagerAdapter {
         imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         container.addView(imageView);
         final PhotoViewAttacher attacher = new PhotoViewAttacher(imageView);
-        ImageLoader.getInstance(container.getContext()).load(mAlbumImages.get(position).getPath(), imageView, new SimpleTarget<GlideDrawable>() {
-            @Override
-            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                imageView.setImageDrawable(resource);
-                attacher.update();
-                attacher.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            }
-        });
+        ImageDisplay.load(mAlbumImages.get(position).getPath(), imageView);
         return imageView;
     }
 

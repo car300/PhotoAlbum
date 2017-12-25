@@ -178,7 +178,6 @@ public class PopWindowHelp {
         ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                Log.d("Photopreview", "大图预览：onPageSelected---" + position);
                 checkedImagePosition = position;
                 PhotoAlbumPicture albumImage = listPhotos.get(position);
                 checkBox.setChecked(albumImage.isChecked());
@@ -196,7 +195,6 @@ public class PopWindowHelp {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (lisenter == null) return;
-                Log.d("Photopreview", "大图预览：onCheckedChanged---" + checkedImagePosition);
                 lisenter.onCheckedChanged(buttonView, isChecked, checkedImagePosition);
                 previewAdapter.notifyDataSetChanged();
                 setBtnEnabled(limitCount, context, tvCount, tvFinish, listChecked);

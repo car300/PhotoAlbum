@@ -1,14 +1,13 @@
 package com.xhe.photoalbum;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 
@@ -17,9 +16,8 @@ import com.xhe.photoalbum.data.ThemeData;
 import com.xhe.photoalbum.interfaces.OnAdapterViewItemClickLisenter;
 import com.xhe.photoalbum.interfaces.OnCheckChangedLisenter;
 import com.xhe.photoalbum.utils.DisplayUtils;
-import com.xhe.photoalbum.utils.ImageLoader;
+import com.xhe.photoalbum.utils.ImageDisplay;
 import com.xhe.photoalbum.utils.Util;
-import com.xhe.photoalbum.utils.SelectorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +41,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
     private List<PhotoAlbumPicture> listPhotos = new ArrayList<>();
     private int imgSize;//照片尺寸，宽度高度一致
 
-    public PhotoAdapter(Context context, boolean showCamera,int limitCount) {
+    public PhotoAdapter(Context context, boolean showCamera, int limitCount) {
         this.inflater = LayoutInflater.from(context);
         this.showCamera = showCamera;
         this.context = context;
@@ -56,11 +54,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public void notifyItemDataChanged(int index){
-        if (index<0){
+    public void notifyItemDataChanged(int index) {
+        if (index < 0) {
             return;
         }
-        notifyItemChanged(showCamera?index+1:index);
+        notifyItemChanged(showCamera ? index + 1 : index);
     }
 
     @Override
@@ -73,7 +71,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
         }
         return null;
     }
-
 
 
     @Override
@@ -99,21 +96,25 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
         final int photoIndex = showCamera ? holder.getAdapterPosition() - 1 : holder.getAdapterPosition();
         PhotoAlbumPicture photo = listPhotos.get(photoIndex);
         //单选的时候选择框隐藏
-        if (limitCount==1){
-            holder.cbChecked.setVisibility(View.INVISIBLE);
-        }
+//        if (limitCount == 1) {
+//            holder.cbChecked.setVisibility(View.INVISIBLE);
+//        }
         //选择框的样式
         holder.cbChecked.setButtonDrawable(ThemeData.getCheckBoxDrawable());
-        ImageLoader.getInstance(context).load(Util.LOCAL_FILE_URI_PREFIX + photo.getPath(), holder.ivPhoto, imgSize, imgSize);
+        ImageDisplay.load(Util.LOCAL_FILE_URI_PREFIX + photo.getPath(), holder.ivPhoto);
         holder.cbChecked.setChecked(photo.isChecked());
-        Log.w("Photo", "onBindViewHolder-------" + position+"是否选中"+photo.isChecked());
-
+        holder.checkView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.cbChecked.setChecked(!holder.cbChecked.isChecked());
+            }
+        });
         holder.cbChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (checkChangedLisenter != null) {
                     //这里的position要重新获取，否则会错乱
-                    checkChangedLisenter.onCheckedChanged(buttonView, isChecked, showCamera?holder.getAdapterPosition()-1:holder.getAdapterPosition());
+                    checkChangedLisenter.onCheckedChanged(buttonView, isChecked, showCamera ? holder.getAdapterPosition() - 1 : holder.getAdapterPosition());
                 }
             }
         });
@@ -146,9 +147,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivPhoto;
-        AppCompatCheckBox cbChecked;
+        CheckBox cbChecked;
         int viewType;
         View itemView;
+        View checkView;
 
         public ViewHolder(int viewType, View itemView) {
             super(itemView);
@@ -163,7 +165,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
                     break;
                 case TYPE_PICTURE:
                     ivPhoto = (ImageView) itemView.findViewById(R.id.iv_photo);
-                    cbChecked = (AppCompatCheckBox) itemView.findViewById(R.id.cb_photo_check);
+                    cbChecked = (CheckBox) itemView.findViewById(R.id.cb_photo_check);
+                    checkView = itemView.findViewById(R.id.v_check);
                     break;
             }
         }

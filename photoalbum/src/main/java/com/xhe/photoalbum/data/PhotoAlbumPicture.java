@@ -8,7 +8,7 @@ import android.os.Parcelable;
  * 相册照片信息
  */
 
-public class PhotoAlbumPicture implements Parcelable , Comparable<PhotoAlbumPicture>{
+public class PhotoAlbumPicture implements Parcelable, Comparable<PhotoAlbumPicture> {
     private int id;
     /**
      * 图片路径。
@@ -135,4 +135,10 @@ public class PhotoAlbumPicture implements Parcelable , Comparable<PhotoAlbumPict
             return new PhotoAlbumPicture[size];
         }
     };
+
+
+    @Override
+    public int hashCode() {
+        return (isChecked ? 1 : 0);
+    }
 }
