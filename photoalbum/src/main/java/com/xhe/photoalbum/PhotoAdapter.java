@@ -3,12 +3,10 @@ package com.xhe.photoalbum;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
@@ -16,8 +14,7 @@ import com.xhe.photoalbum.data.ThemeData;
 import com.xhe.photoalbum.interfaces.OnAdapterViewItemClickLisenter;
 import com.xhe.photoalbum.interfaces.OnCheckChangedLisenter;
 import com.xhe.photoalbum.utils.DisplayUtils;
-import com.xhe.photoalbum.utils.ImageDisplay;
-import com.xhe.photoalbum.utils.Util;
+import com.xhe.photoalbum.utils.ImageDisplayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +75,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
         int viewType = getItemViewType(position);
         holder.itemView.getLayoutParams().width = imgSize;
         holder.itemView.getLayoutParams().height = imgSize;
-        holder.itemView.requestLayout();
+//        holder.itemView.requestLayout();
         /**相机**/
         if (viewType == TYPE_CAMERA) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -101,21 +98,20 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
 //        }
         //选择框的样式
         holder.cbChecked.setButtonDrawable(ThemeData.getCheckBoxDrawable());
-        ImageDisplay.load(Util.LOCAL_FILE_URI_PREFIX + photo.getPath(), holder.ivPhoto);
+        ImageDisplayer.load( photo.getPath(), holder.ivPhoto);
+//        Glide.with(context).load(photo.getPath()).into(holder.ivPhoto);
         holder.cbChecked.setChecked(photo.isChecked());
         holder.checkView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.cbChecked.setChecked(!holder.cbChecked.isChecked());
-            }
-        });
-        holder.cbChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (checkChangedLisenter != null) {
-                    //这里的position要重新获取，否则会错乱
-                    checkChangedLisenter.onCheckedChanged(buttonView, isChecked, showCamera ? holder.getAdapterPosition() - 1 : holder.getAdapterPosition());
+                if (holder.cbChecked.isChecked()) {
+                    checkChangedLisenter.remove(showCamera ? holder.getAdapterPosition() - 1 : holder.getAdapterPosition());
+                    holder.cbChecked.setChecked(false);
+                } else {
+                    holder.cbChecked.setChecked(checkChangedLisenter.add(showCamera ? holder.getAdapterPosition() - 1 : holder.getAdapterPosition()));
+
                 }
+
             }
         });
 

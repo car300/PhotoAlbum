@@ -1,6 +1,5 @@
 package com.xhe.photoalbum;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -12,12 +11,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.CompoundButton;
+import android.widget.CheckBox;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,12 +26,13 @@ import com.xhe.photoalbum.data.PhotoAlbumScaner;
 import com.xhe.photoalbum.data.ThemeData;
 import com.xhe.photoalbum.interfaces.OnAdapterViewItemClickLisenter;
 import com.xhe.photoalbum.interfaces.OnCheckChangedLisenter;
-import com.xhe.photoalbum.utils.ImageDisplay;
+import com.xhe.photoalbum.utils.ImageDisplayer;
 import com.xhe.photoalbum.utils.Util;
 import com.xhe.photoalbum.widget.CustomTitlebar;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -43,7 +42,7 @@ import java.util.Locale;
  * Created by xhe on 2017/6/17.
  * 相册展示activity
  */
-public class PhotoAlbumActivity extends AppCompatActivity {
+public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChangedLisenter {
     private Context context;
     private RecyclerView recyclerView;
     private TextView tvPreview;
@@ -151,18 +150,9 @@ public class PhotoAlbumActivity extends AppCompatActivity {
                 if (listChecked.size() <= 0) {
                     return;
                 }
-                listCheckedTemp = new ArrayList<>(listChecked);
+                listCheckedTemp = new ArrayList<>(Arrays.asList(new PhotoAlbumPicture[listChecked.size()]));
                 Collections.copy(listCheckedTemp, listChecked);
-                showPreviewPop(0, listCheckedTemp, new OnCheckChangedLisenter() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked, int position) {
-                        PhotoAlbumPicture albumImage = listCheckedTemp.get(position);
-                        albumImage.setChecked(isChecked);
-                        int i = listFolders.get(currenFolderIndex).getPhotos().indexOf(albumImage);
-                        checkChanged(buttonView, isChecked, i);
-                        photoAdapter.notifyItemDataChanged(i);
-                    }
-                });
+                showPreviewPop(0, listCheckedTemp, true, PhotoAlbumActivity.this);
             }
         });
         tvCheckedCount.setOnClickListener(new View.OnClickListener() {
@@ -194,23 +184,12 @@ public class PhotoAlbumActivity extends AppCompatActivity {
                 startCamera();
             }
         });
-        photoAdapter.setCheckChangedLisenter(new OnCheckChangedLisenter() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked, int position) {
-                checkChanged(buttonView, isChecked, position);
-            }
-        });
+        photoAdapter.setCheckChangedLisenter(this);
         photoAdapter.setItemClickListener(new OnAdapterViewItemClickLisenter() {
             @Override
             public void itemClick(View view, int position) {
                 //查看大图 这个position是在数据列表中的position
-                showPreviewPop(position, listFolders.get(currenFolderIndex).getPhotos(), new OnCheckChangedLisenter() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked, int position) {
-                        checkChanged(buttonView, isChecked, position);
-                        photoAdapter.notifyItemDataChanged(position);
-                    }
-                });
+                showPreviewPop(position, listFolders.get(currenFolderIndex).getPhotos(), false, PhotoAlbumActivity.this);
 
             }
         });
@@ -225,7 +204,7 @@ public class PhotoAlbumActivity extends AppCompatActivity {
                         //当屏幕停止滚动，加载图片
                         try {
                             if (context != null)
-                                ImageDisplay.getDisplayer().resumeRequests(context);
+                                ImageDisplayer.getDisplayer().resumeRequests();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -234,7 +213,7 @@ public class PhotoAlbumActivity extends AppCompatActivity {
                         //当屏幕滚动且用户使用的触碰或手指还在屏幕上，停止加载图片
                         try {
                             if (context != null)
-                                ImageDisplay.getDisplayer().pauseRequests(context);
+                                ImageDisplayer.getDisplayer().pauseRequests();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -243,7 +222,7 @@ public class PhotoAlbumActivity extends AppCompatActivity {
                         //由于用户的操作，屏幕产生惯性滑动，停止加载图片
                         try {
                             if (context != null)
-                                ImageDisplay.getDisplayer().pauseRequests(context);
+                                ImageDisplayer.getDisplayer().pauseRequests();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -271,11 +250,8 @@ public class PhotoAlbumActivity extends AppCompatActivity {
      *
      * @param position
      */
-    private void showPreviewPop(int position, List<PhotoAlbumPicture> listPhotos, OnCheckChangedLisenter lisenter) {
-        if (previewPop != null) {
-            previewPop = null;
-        }
-        previewPop = PopWindowHelp.initPreviewPop(context, limitCount, ThemeData.getTitleBarColor(), ThemeData.getTitleTextColor(), listPhotos, listChecked, position, lisenter, new View.OnClickListener() {
+    private void showPreviewPop(int position, List<PhotoAlbumPicture> listPhotos, boolean isChose, OnCheckChangedLisenter lisenter) {
+        previewPop = PopWindowHelp.initPreviewPop(isChose, context, limitCount, ThemeData.getTitleBarColor(), ThemeData.getTitleTextColor(), listPhotos, listChecked, position, lisenter, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toResult(false);
@@ -284,7 +260,8 @@ public class PhotoAlbumActivity extends AppCompatActivity {
         previewPop.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
-                previewPop = null;
+                photoAdapter.notifyDataSetChanged();
+                setBtnEnabled();
             }
         });
 
@@ -314,45 +291,50 @@ public class PhotoAlbumActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * 照片的选择状态改变时要做的处理
-     *
-     * @param buttonView
-     * @param isChecked
-     * @param position
-     */
-    private void checkChanged(CompoundButton buttonView, boolean isChecked, int position) {
+    @Override
+    public boolean add(int position) {
+
+
         List<PhotoAlbumPicture> photos = listFolders.get(currenFolderIndex).getPhotos();
         PhotoAlbumPicture picture = photos.get(position);
-        picture.setChecked(isChecked);
-        if (!isChecked) {
-            listChecked.remove(picture);
-            setBtnEnabled();
-            return;
-        }
 
-        //先判断该图片是否已被选中
-        if (listChecked.contains(picture)) {
-            setBtnEnabled();
-            return;
+        if (limitCount == 1) {
+            listChecked.clear();
+            for (int i = 0; i < photos.size(); i++) {
+                PhotoAlbumPicture p = photos.get(i);
+                if (p.isChecked()) {
+                    CheckBox cb = (CheckBox) layoutManager.getChildAt(showCamera ? i + 1 : i).findViewById(R.id.cb_photo_check);
+                    cb.setChecked(false);
+                    p.setChecked(false);
+                }
+            }
         }
-
-        //该图片未被选中
-        //当前checked是否达到最大数量
         if (listChecked.size() >= limitCount) {
             toast(String.format(Locale.getDefault(), "你最多可以选择%1$d张图片", limitCount));
-            buttonView.setChecked(false);
-            picture.setChecked(false);
-            setBtnEnabled();
-            return;
+            return false;
         }
+        picture.setChecked(true);
         listChecked.add(picture);
+
+        setBtnEnabled();
+        return true;
+    }
+
+    @Override
+    public void remove(int position) {
+        List<PhotoAlbumPicture> photos = listFolders.get(currenFolderIndex).getPhotos();
+        PhotoAlbumPicture picture = photos.get(position);
+        picture.setChecked(false);
+        CheckBox cb = (CheckBox) layoutManager.getChildAt(showCamera ? position + 1 : position).findViewById(R.id.cb_photo_check);
+        cb.setChecked(false);
+        listChecked.remove(picture);
         setBtnEnabled();
     }
 
     /**
      * 设置底部按钮的显示与点击状态
      */
+
     private void setBtnEnabled() {
         boolean enabled = listChecked.size() > 0 ? true : false;
         tvPreview.setClickable(enabled);
@@ -439,4 +421,5 @@ public class PhotoAlbumActivity extends AppCompatActivity {
         folderPop = null;
         super.onDestroy();
     }
+
 }

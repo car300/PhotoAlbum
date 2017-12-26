@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.xhe.photoalbum.data.PhotoAlbumFolder;
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
 import com.xhe.photoalbum.interfaces.OnAdapterViewItemClickLisenter;
-import com.xhe.photoalbum.utils.ImageDisplay;
+import com.xhe.photoalbum.utils.ImageDisplayer;
 import com.xhe.photoalbum.utils.Util;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
         ArrayList<PhotoAlbumPicture> photos = folder.getPhotos();
         if (photos != null && photos.size() > 0) {
             holder.tvCount.setText("("+photos.size()+")");
-            ImageDisplay.load(Util.LOCAL_FILE_URI_PREFIX + photos.get(0).getPath(), holder.ivHead);
+            ImageDisplayer.load(Util.LOCAL_FILE_URI_PREFIX + photos.get(0).getPath(), holder.ivHead);
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

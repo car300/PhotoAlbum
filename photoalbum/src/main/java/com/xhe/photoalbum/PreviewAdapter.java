@@ -1,14 +1,12 @@
 package com.xhe.photoalbum;
 
-import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
-import com.xhe.photoalbum.utils.ImageDisplay;
+import com.xhe.photoalbum.utils.ImageDisplayer;
 
 import java.util.List;
 
@@ -40,10 +38,16 @@ public class PreviewAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         final ImageView imageView = new ImageView(container.getContext());
+        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         container.addView(imageView);
         final PhotoViewAttacher attacher = new PhotoViewAttacher(imageView);
-        ImageDisplay.load(mAlbumImages.get(position).getPath(), imageView);
+        ImageDisplayer.getDisplayer().display(mAlbumImages.get(position).getPath(), imageView, new ImageDisplayer.CompleteLoader() {
+            @Override
+            public void complete() {
+                attacher.update();
+            }
+        });
         return imageView;
     }
 

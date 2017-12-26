@@ -12,15 +12,12 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.gengqiquan.adapter.adapter.SBAdapter;
 import com.gengqiquan.adapter.interfaces.Converter;
 import com.gengqiquan.adapter.interfaces.Holder;
 import com.xhe.photoalbum.PhotoAlbum;
 import com.xhe.photoalbum.data.ThemeData;
-import com.xhe.photoalbum.utils.ImageDisplay;
+import com.xhe.photoalbum.utils.ImageDisplayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,28 +34,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ThemeData.init(new ThemeData.ThemeBuilder()
                 .spanCount(3)
-                .titleBarColor(Color.parseColor("#009def"))
-                .titleTextColor(Color.WHITE)
+                .titleBarColor(Color.WHITE)
+                .titleTextColor(Color.BLACK)
                 .backgroundColor(Color.WHITE)
                 .checkBoxDrawable(R.drawable.checkbox_style)
                 .statusBarColor(getResources().getColor(R.color.main_color))
                 .build());
-        ImageDisplay.setDisplayer(new ImageDisplay.ImageDisplayer() {
-            @Override
-            public void display(@NonNull String url, @NonNull final ImageView imageView, final ImageDisplay.Loader loader) {
-                Glide.with(MainActivity.this).load(url).centerCrop().into(imageView);
-            }
-
-            @Override
-            public void pauseRequests(@NonNull Context contexts) {
-
-            }
-
-            @Override
-            public void resumeRequests(@NonNull Context context) {
-
-            }
-        });
+//        ImageDisplayer.setDisplayer(new ImageDisplayer.Displayer() {
+//            @Override
+//            public void display(@NonNull String url, @NonNull final ImageView imageView) {
+//                Glide.with(imageView.getContext()).load(url).into(imageView);
+//            }
+//
+//            @Override
+//            public void pauseRequests() {
+//
+//            }
+//
+//            @Override
+//            public void resumeRequests() {
+//
+//            }
+//        });
         findViewById(R.id.tv_start_album).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void convert(Holder holder, String item) {
                         ImageView imageView = holder.getView(R.id.imageview);
-                        ImageDisplay.load(item, imageView);
+                        ImageDisplayer.load(item, imageView);
                     }
                 });
         gridView.setAdapter(adapter);
