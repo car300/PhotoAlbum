@@ -3,7 +3,6 @@ package com.xhe.photoalbum.data;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,10 +31,17 @@ public class PhotoAlbumScaner {
         return instance;
     }
 
+    private boolean contains(List<String> expandTypes, String filePath) {
+        if (expandTypes == null || filePath == null) return false;
+        int indexOf = filePath.lastIndexOf(".");
+        String end = filePath.substring(indexOf);
+        return expandTypes.contains(end);
+    }
+
     /**
      * 获取文件夹列表及其相应照片列表
      */
-    public List<PhotoAlbumFolder> getPhotoAlbum(Context context, List<String> removePaths) {
+    public List<PhotoAlbumFolder> getPhotoAlbum(Context context, List<String> removePaths, List<String> expandTypes) {
         Cursor cursor = MediaStore.Images.Media.query(context.getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, STORE_IMAGES);
         Map<String, PhotoAlbumFolder> albumFolderMap = new HashMap<>();
 
@@ -46,8 +52,8 @@ public class PhotoAlbumScaner {
         while (cursor.moveToNext()) {
             int imageId = cursor.getInt(0);
             String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            //忽略视频和Gif文件
-            if (imagePath == null || imagePath.endsWith(".mp4") || imagePath.endsWith(".gif")) {
+            //忽略指定后缀文件
+            if (contains(expandTypes, imagePath)) {
                 continue;
             }
             //不添加需要移除的照片路径的照片

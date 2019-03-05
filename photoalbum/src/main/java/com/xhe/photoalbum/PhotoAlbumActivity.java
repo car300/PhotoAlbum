@@ -28,7 +28,6 @@ import com.xhe.photoalbum.data.PhotoAlbumScaner;
 import com.xhe.photoalbum.data.ThemeData;
 import com.xhe.photoalbum.interfaces.OnAdapterViewItemClickLisenter;
 import com.xhe.photoalbum.interfaces.OnCheckChangedLisenter;
-import com.xhe.photoalbum.utils.ImageDisplayer;
 import com.xhe.photoalbum.utils.Util;
 import com.xhe.photoalbum.widget.CustomTitlebar;
 
@@ -335,25 +334,6 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
         List<PhotoAlbumPicture> photos = listFolders.get(currenFolderIndex).getPhotos();
         PhotoAlbumPicture picture = photos.get(position);
         picture.setChecked(false);
-//        View v = layoutManager.getChildAt(showCamera ? position + 1 : position);
-        View v = layoutManager.findViewByPosition(showCamera ? position + 1 : position);
-        if (v != null) {
-            Log.d("PhotoAlbum", "remove()---getChildAt view !=null");
-            CheckBox cb = (CheckBox) v.findViewById(R.id.cb_photo_check);
-            cb.setChecked(false);
-        } else {
-            Log.d("PhotoAlbum", "remove()---getChildAt view =null");
-        }
-        listChecked.remove(picture);
-        setBtnEnabled();
-        return true;
-    }
-
-    @Override
-    public void remove(int position) {
-        List<PhotoAlbumPicture> photos = listFolders.get(currenFolderIndex).getPhotos();
-        PhotoAlbumPicture picture = photos.get(position);
-        picture.setChecked(false);
         View v = layoutManager.findViewByPosition(showCamera ? position + 1 : position);
         if (v != null) {
             CheckBox cb = (CheckBox) v.findViewById(R.id.cb_photo_check);
@@ -391,7 +371,9 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
      */
     private void loadPhotos(final int index) {
         if (listFolders == null || listFolders.size() <= 0) {
-            listFolders.addAll(PhotoAlbumScaner.getInstance().getPhotoAlbum(context, getIntent().getStringArrayListExtra(PhotoAlbum.KEY_ALBUM_REMOVE_PATHS)));
+            ArrayList<String> removePaths = getIntent().getStringArrayListExtra(PhotoAlbum.KEY_ALBUM_REMOVE_PATHS);
+            ArrayList<String> expandPaths = getIntent().getStringArrayListExtra(PhotoAlbum.KEY_ALBUM_REMOVE_EXPAND_TYPES);
+            listFolders.addAll(PhotoAlbumScaner.getInstance().getPhotoAlbum(context, removePaths, expandPaths));
         }
         currenFolderIndex = index;
         PhotoAlbumFolder folder = listFolders.get(index);

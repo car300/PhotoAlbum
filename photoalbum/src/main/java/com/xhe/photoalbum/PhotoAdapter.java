@@ -101,7 +101,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
 
         String path = photo.getPath();
         Glide.with(holder.ivPhoto.getContext())
-                .load(path).into(holder.ivPhoto);
+                .load(path)
+                .asBitmap()
+                .into(holder.ivPhoto);
 
         holder.cbChecked.setChecked(photo.isChecked());
         holder.checkView.setOnClickListener(new View.OnClickListener() {

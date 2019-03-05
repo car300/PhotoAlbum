@@ -2,18 +2,13 @@ package com.xhe.photoalbum;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.xhe.photoalbum.data.ThemeData;
-import com.xhe.photoalbum.utils.ImageDisplayer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +26,32 @@ public class PhotoAlbum {
     public static final String KEY_ALBUM_MAX_LIMIT_COUNT = "KEY_ALBUM_MAX_LIMIT_COUNT";//允许选择的最大数量
     public static final String KEY_ALBUM_SHOW_CAMERA = "KEY_ALBUM_SHOW_CAMERA";//是否需要展示相机
     public static final String KEY_ALBUM_REMOVE_PATHS = "KEY_ALBUM_REMOVE_PATHS";//需要在相册中移除的照片路径
+    static final String KEY_ALBUM_REMOVE_EXPAND_TYPES = "KEY_ALBUM_REMOVE_EXPAND_TYPES";//需要在相册中移除的文件后缀
+
+    /**
+     * 文件名后缀
+     */
+    public enum ExpandType {
+        GIF(".gif"),
+        MP4(".mp4"),
+        JPEG(".jpeg"),
+        JPG(".jpg"),
+        PNG(".png"),
+        WEBP(".webp"),
+        BMP(".bmp"),
+        ;
+
+        private final String type;
+
+        ExpandType(String type) {
+            this.type = type;
+        }
+
+        public String getType() {
+            return type;
+        }
+    }
+
 
     /**
      * 解析接受到的结果，开发者需要判断{@code resultCode = Activity.RESULT_OK}.
@@ -48,6 +69,11 @@ public class PhotoAlbum {
 
 
     private Context context;
+
+    /**
+     * 需要忽略的文件后缀
+     */
+    private ArrayList<String> expandTypes = new ArrayList<>();
 
     /**
      * 不需要在相册显示的照片路径
@@ -100,9 +126,6 @@ public class PhotoAlbum {
      */
     private int spanCount = ThemeData.getSpanCount();
 
-
-    private PhotoAlbum() {
-    }
 
     /**
      * context必须是activity或fragment的
@@ -209,6 +232,22 @@ public class PhotoAlbum {
     }
 
     /**
+     * 忽略指定后缀文件
+     *
+     * @param types
+     * @return
+     */
+    public PhotoAlbum removeExpandType(@Nullable ExpandType... types) {
+        if (types == null) {
+            return this;
+        }
+        for (ExpandType type : types) {
+            expandTypes.add(type.getType());
+        }
+        return this;
+    }
+
+    /**
      * 最终调用的启动相册
      */
     public Intent getAlbumIntent() {
@@ -226,6 +265,7 @@ public class PhotoAlbum {
         intent.putExtra(KEY_ALBUM_MAX_LIMIT_COUNT, limitCount);
         intent.putExtra(KEY_ALBUM_SHOW_CAMERA, showCamera);
         intent.putStringArrayListExtra(KEY_ALBUM_REMOVE_PATHS, listRemovePath);
+        intent.putStringArrayListExtra(KEY_ALBUM_REMOVE_EXPAND_TYPES, expandTypes);
 
         if (context == null)
             throw new NullPointerException("context must be not null");
