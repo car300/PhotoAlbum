@@ -15,8 +15,6 @@ import com.xhe.photoalbum.data.ThemeData;
 import com.xhe.photoalbum.interfaces.OnAdapterViewItemClickLisenter;
 import com.xhe.photoalbum.interfaces.OnCheckChangedLisenter;
 import com.xhe.photoalbum.utils.DisplayUtils;
-import com.xhe.photoalbum.utils.ImageDisplayer;
-import com.xhe.photoalbum.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,15 +93,16 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
         final int photoIndex = showCamera ? holder.getAdapterPosition() - 1 : holder.getAdapterPosition();
         PhotoAlbumPicture photo = listPhotos.get(photoIndex);
         //单选的时候选择框隐藏
-//        if (limitCount == 1) {
-//            holder.cbChecked.setVisibility(View.INVISIBLE);
-//        }
+        if (limitCount == 1 && !ThemeData.isSingleChoiceShowBox()) {
+            holder.cbChecked.setVisibility(View.INVISIBLE);
+        }
         //选择框的样式
         holder.cbChecked.setButtonDrawable(ThemeData.getCheckBoxDrawable());
-        Glide.with(holder.ivPhoto.getContext())
-                .load(photo.getPath()).into(holder.ivPhoto);
 
-//        Glide.with(context).load(photo.getPath()).into(holder.ivPhoto);
+        String path = photo.getPath();
+        Glide.with(holder.ivPhoto.getContext())
+                .load(path).into(holder.ivPhoto);
+
         holder.cbChecked.setChecked(photo.isChecked());
         holder.checkView.setOnClickListener(new View.OnClickListener() {
             @Override

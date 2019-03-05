@@ -43,6 +43,12 @@ public class PhotoAlbumPicture implements Parcelable, Comparable<PhotoAlbumPictu
     }
 
     @Override
+    public boolean equals(Object obj) {
+        PhotoAlbumPicture p = (PhotoAlbumPicture) obj;
+        return path.equals(p.getPath());
+    }
+
+    @Override
     public String toString() {
         return "PhotoAlbumPicture{" +
                 "id=" + id +

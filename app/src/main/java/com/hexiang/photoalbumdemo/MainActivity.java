@@ -61,8 +61,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 startActivityForResult(new PhotoAlbum(MainActivity.this)
                         .addRemovePaths(list)
-                        .setShowCamera(true)
-                        .setLimitCount(3)
+                        .setShowCamera(false)
+                        .setLimitCount(1)
+                        .setSingleChoiceShowBox(false)
                         .getAlbumIntent(), 1000);
             }
         });

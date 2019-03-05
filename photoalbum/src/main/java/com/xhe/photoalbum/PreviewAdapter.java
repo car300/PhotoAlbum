@@ -1,6 +1,7 @@
 package com.xhe.photoalbum;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,12 +47,17 @@ public class PreviewAdapter extends PagerAdapter {
         imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         container.addView(imageView);
         final PhotoViewAttacher attacher = new PhotoViewAttacher(imageView);
+        final String path = mAlbumImages.get(position).getPath();
         Glide.with(imageView.getContext().getApplicationContext())
-                .load(mAlbumImages.get(position).getPath())
+                .load(path)
                 .asBitmap()
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inSampleSize = 2;
+                        bitmap = BitmapFactory.decodeFile(path, options);
+
                         imageView.setImageBitmap(bitmap);
                         attacher.update();
                     }

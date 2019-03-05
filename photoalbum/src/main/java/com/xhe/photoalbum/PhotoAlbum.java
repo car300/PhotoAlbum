@@ -55,6 +55,11 @@ public class PhotoAlbum {
     private ArrayList<String> listRemovePath = new ArrayList<>();
 
     /**
+     * 单选对时候是否展示选择框
+     */
+    private boolean singleChoiceShowBox = true;
+
+    /**
      * 最多能选择的图片数量
      * 默认为1
      */
@@ -108,6 +113,17 @@ public class PhotoAlbum {
         this.context = context;
     }
 
+
+    /**
+     * 设置单选是否展示选择框
+     *
+     * @param singleChoiceShowBox
+     * @return
+     */
+    public PhotoAlbum setSingleChoiceShowBox(boolean singleChoiceShowBox) {
+        this.singleChoiceShowBox = singleChoiceShowBox;
+        return this;
+    }
 
     /**
      * 设置限制的最大选择数量
@@ -203,6 +219,7 @@ public class PhotoAlbum {
                 .statusBarColor(statusBarColor)
                 .checkBoxDrawable(checkBoxDrawable)
                 .spanCount(spanCount)
+                .singleChoiceShowBox(singleChoiceShowBox)
                 .build());
 
         Intent intent = new Intent();

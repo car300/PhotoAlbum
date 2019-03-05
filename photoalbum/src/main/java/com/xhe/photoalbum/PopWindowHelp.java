@@ -152,26 +152,35 @@ public class PopWindowHelp {
                 popupWindow.dismiss();
             }
         });
-        View.OnClickListener click = new View.OnClickListener() {
+        View.OnClickListener finishClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 popupWindow.dismiss();
-                //单选情况
-//                if (limitCount == 1) {
-//                    listChecked.add(listPhotos.get(checkedImagePosition));
-//                }
+                //单选情况不需要选择框：需要在选中的时候清空选择列表，并，添加进去
+                if (limitCount == 1 && !ThemeData.isSingleChoiceShowBox()) {
+                    listChecked.clear();
+                    listChecked.add(listPhotos.get(checkedImagePosition));
+                }
+
                 if (isChose) {
                     listPhotos.removeAll(listChecked);
 //                    finish.finish(listChecked);
                 }
+
                 clickListener.onClick(v);
 
             }
         };
-        tvFinish.setOnClickListener(click);
-        tvCount.setOnClickListener(click);
-
-        setBtnEnabled(context, tvCount, tvFinish, listChecked);
+        tvFinish.setOnClickListener(finishClick);
+        tvCount.setOnClickListener(finishClick);
+        if (limitCount == 1 && !ThemeData.isSingleChoiceShowBox()) { //单选且不展示选择框情况
+            tvCount.setVisibility(View.INVISIBLE);
+            tvFinish.setClickable(true);
+            tvFinish.setTextColor(context.getResources().getColor(R.color.tv_finish_enabled));
+            checkBox.setVisibility(View.INVISIBLE);
+        } else {
+            setBtnEnabled(context, tvCount, tvFinish, listChecked);
+        }
 
         if (listPhotos.size() > 2)
             viewPager.setOffscreenPageLimit(2);

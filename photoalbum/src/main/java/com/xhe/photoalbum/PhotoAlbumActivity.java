@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -138,9 +139,9 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
     private void initView() {
         rlBottom = findViewById(R.id.rl_bottom);
         //单选隐藏底部栏
-//        if (limitCount == 1) {
-//            rlBottom.setVisibility(View.GONE);
-//        }
+        if (limitCount == 1 && !ThemeData.isSingleChoiceShowBox()) {
+            rlBottom.setVisibility(View.GONE);
+        }
         tvPreview = (TextView) findViewById(R.id.tv_preview);
         tvCheckedCount = (TextView) findViewById(R.id.tv_checked_count);
         tvCheckedFinish = (TextView) findViewById(R.id.tv_checked_finish);
@@ -294,6 +295,8 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
 
     @Override
     public boolean add(int position) {
+
+
         List<PhotoAlbumPicture> photos = listFolders.get(currenFolderIndex).getPhotos();
         PhotoAlbumPicture picture = photos.get(position);
 
@@ -304,9 +307,14 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
                 if (p.isChecked()) {
                     View v = layoutManager.findViewByPosition(showCamera ? i + 1 : i);
                     if (v != null) {
+                        Log.d("PhotoAlbum", "add()---getChildAt view !=null");
+
                         CheckBox cb = (CheckBox) v.findViewById(R.id.cb_photo_check);
                         cb.setChecked(false);
+                    } else {
+                        Log.d("PhotoAlbum", "add()---getChildAt view =null");
                     }
+
                     p.setChecked(false);
                 }
             }
@@ -317,6 +325,26 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
         }
         picture.setChecked(true);
         listChecked.add(picture);
+
+        setBtnEnabled();
+        return true;
+    }
+
+    @Override
+    public void remove(int position) {
+        List<PhotoAlbumPicture> photos = listFolders.get(currenFolderIndex).getPhotos();
+        PhotoAlbumPicture picture = photos.get(position);
+        picture.setChecked(false);
+//        View v = layoutManager.getChildAt(showCamera ? position + 1 : position);
+        View v = layoutManager.findViewByPosition(showCamera ? position + 1 : position);
+        if (v != null) {
+            Log.d("PhotoAlbum", "remove()---getChildAt view !=null");
+            CheckBox cb = (CheckBox) v.findViewById(R.id.cb_photo_check);
+            cb.setChecked(false);
+        } else {
+            Log.d("PhotoAlbum", "remove()---getChildAt view =null");
+        }
+        listChecked.remove(picture);
         setBtnEnabled();
         return true;
     }
