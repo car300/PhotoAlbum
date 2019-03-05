@@ -20,6 +20,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.xhe.photoalbum.data.PhotoAlbumFolder;
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
 import com.xhe.photoalbum.data.PhotoAlbumScaner;
@@ -204,7 +205,7 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
                         //当屏幕停止滚动，加载图片
                         try {
                             if (context != null)
-                                ImageDisplayer.getDisplayer().resumeRequests();
+                                Glide.with(context).resumeRequests();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -213,7 +214,7 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
                         //当屏幕滚动且用户使用的触碰或手指还在屏幕上，停止加载图片
                         try {
                             if (context != null)
-                                ImageDisplayer.getDisplayer().pauseRequests();
+                                Glide.with(context).pauseRequests();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -222,7 +223,7 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
                         //由于用户的操作，屏幕产生惯性滑动，停止加载图片
                         try {
                             if (context != null)
-                                ImageDisplayer.getDisplayer().pauseRequests();
+                                Glide.with(context).pauseRequests();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -293,8 +294,6 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
 
     @Override
     public boolean add(int position) {
-
-
         List<PhotoAlbumPicture> photos = listFolders.get(currenFolderIndex).getPhotos();
         PhotoAlbumPicture picture = photos.get(position);
 
@@ -303,8 +302,11 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
             for (int i = 0; i < photos.size(); i++) {
                 PhotoAlbumPicture p = photos.get(i);
                 if (p.isChecked()) {
-                    CheckBox cb = (CheckBox) layoutManager.getChildAt(showCamera ? i + 1 : i).findViewById(R.id.cb_photo_check);
-                    cb.setChecked(false);
+                    View v = layoutManager.findViewByPosition(showCamera ? i + 1 : i);
+                    if (v != null) {
+                        CheckBox cb = (CheckBox) v.findViewById(R.id.cb_photo_check);
+                        cb.setChecked(false);
+                    }
                     p.setChecked(false);
                 }
             }
@@ -315,7 +317,6 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
         }
         picture.setChecked(true);
         listChecked.add(picture);
-
         setBtnEnabled();
         return true;
     }
@@ -325,8 +326,11 @@ public class PhotoAlbumActivity extends AppCompatActivity implements OnCheckChan
         List<PhotoAlbumPicture> photos = listFolders.get(currenFolderIndex).getPhotos();
         PhotoAlbumPicture picture = photos.get(position);
         picture.setChecked(false);
-        CheckBox cb = (CheckBox) layoutManager.getChildAt(showCamera ? position + 1 : position).findViewById(R.id.cb_photo_check);
-        cb.setChecked(false);
+        View v = layoutManager.findViewByPosition(showCamera ? position + 1 : position);
+        if (v != null) {
+            CheckBox cb = (CheckBox) v.findViewById(R.id.cb_photo_check);
+            cb.setChecked(false);
+        }
         listChecked.remove(picture);
         setBtnEnabled();
     }

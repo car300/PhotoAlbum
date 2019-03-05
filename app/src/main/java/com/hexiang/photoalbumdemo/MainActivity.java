@@ -75,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void convert(Holder holder, String item) {
                         ImageView imageView = holder.getView(R.id.imageview);
-                        ImageDisplayer.load(item, imageView);
+                        Glide.with(imageView.getContext())
+                                .load(item).into(imageView);
                     }
                 });
         gridView.setAdapter(adapter);

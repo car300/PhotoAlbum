@@ -9,12 +9,14 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
 import com.xhe.photoalbum.data.ThemeData;
 import com.xhe.photoalbum.interfaces.OnAdapterViewItemClickLisenter;
 import com.xhe.photoalbum.interfaces.OnCheckChangedLisenter;
 import com.xhe.photoalbum.utils.DisplayUtils;
 import com.xhe.photoalbum.utils.ImageDisplayer;
+import com.xhe.photoalbum.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +100,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
 //        }
         //选择框的样式
         holder.cbChecked.setButtonDrawable(ThemeData.getCheckBoxDrawable());
-        ImageDisplayer.load( photo.getPath(), holder.ivPhoto);
+        Glide.with(holder.ivPhoto.getContext())
+                .load(photo.getPath()).into(holder.ivPhoto);
+
 //        Glide.with(context).load(photo.getPath()).into(holder.ivPhoto);
         holder.cbChecked.setChecked(photo.isChecked());
         holder.checkView.setOnClickListener(new View.OnClickListener() {

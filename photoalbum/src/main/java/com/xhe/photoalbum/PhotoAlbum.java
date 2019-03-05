@@ -2,22 +2,22 @@ package com.xhe.photoalbum;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.xhe.photoalbum.data.ThemeData;
 import com.xhe.photoalbum.utils.ImageDisplayer;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import library.HelloLoader;
-import library.LoaderConfigure;
-import library.listener.LoadListener;
 
 
 /**
@@ -204,40 +204,6 @@ public class PhotoAlbum {
                 .checkBoxDrawable(checkBoxDrawable)
                 .spanCount(spanCount)
                 .build());
-
-        if (ImageDisplayer.getDisplayer() == null) {
-            HelloLoader loader = new HelloLoader
-                    .Builder(context.getApplicationContext())
-                    .allowDiskThreadPool(true)
-                    .build();
-            ImageDisplayer.setDisplayer(new ImageDisplayer.Displayer() {
-                @Override
-                public void display(@NonNull String url, @NonNull ImageView imageView, final ImageDisplayer.CompleteLoader listener) {
-                    LoaderConfigure configure = new LoaderConfigure(new LoadListener() {
-                        @Override
-                        public void started() {
-
-                        }
-
-                        @Override
-                        public void completed() {
-                            listener.complete();
-                        }
-                    });
-                    HelloLoader.bind(imageView).LoaderConfigure(configure).load(url);
-                }
-
-                @Override
-                public void pauseRequests() {
-                    HelloLoader.pauseLoader();
-                }
-
-                @Override
-                public void resumeRequests() {
-                    HelloLoader.resumeLoader();
-                }
-            });
-        }
 
         Intent intent = new Intent();
         intent.putExtra(KEY_ALBUM_MAX_LIMIT_COUNT, limitCount);

@@ -1,10 +1,14 @@
 package com.xhe.photoalbum;
 
+import android.graphics.Bitmap;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
 import com.xhe.photoalbum.utils.ImageDisplayer;
 
@@ -42,12 +46,16 @@ public class PreviewAdapter extends PagerAdapter {
         imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         container.addView(imageView);
         final PhotoViewAttacher attacher = new PhotoViewAttacher(imageView);
-        ImageDisplayer.getDisplayer().display(mAlbumImages.get(position).getPath(), imageView, new ImageDisplayer.CompleteLoader() {
-            @Override
-            public void complete() {
-                attacher.update();
-            }
-        });
+        Glide.with(imageView.getContext().getApplicationContext())
+                .load(mAlbumImages.get(position).getPath())
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
+                        imageView.setImageBitmap(bitmap);
+                        attacher.update();
+                    }
+                });
         return imageView;
     }
 
