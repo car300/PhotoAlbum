@@ -8,10 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
-import com.xhe.photoalbum.utils.ImageDisplayer;
 
 import java.util.List;
 
@@ -48,20 +48,34 @@ public class PreviewAdapter extends PagerAdapter {
         container.addView(imageView);
         final PhotoViewAttacher attacher = new PhotoViewAttacher(imageView);
         final String path = mAlbumImages.get(position).getPath();
-        Glide.with(imageView.getContext().getApplicationContext())
-                .load(path)
-                .asBitmap()
-                .into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inSampleSize = 2;
-                        bitmap = BitmapFactory.decodeFile(path, options);
+        if (path.endsWith(".gif")) {
+            Glide.with(imageView.getContext().getApplicationContext())
+                    .load(path)
+                    .asGif()
+                    .into(new SimpleTarget<GifDrawable>() {
+                        @Override
+                        public void onResourceReady(GifDrawable resource, GlideAnimation<? super GifDrawable> glideAnimation) {
+                            imageView.setImageDrawable(resource);
+                            resource.start();
+                            attacher.update();
+                        }
+                    });
+        } else {
+            Glide.with(imageView.getContext().getApplicationContext())
+                    .load(path)
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inSampleSize = 2;
+                            bitmap = BitmapFactory.decodeFile(path, options);
 
-                        imageView.setImageBitmap(bitmap);
-                        attacher.update();
-                    }
-                });
+                            imageView.setImageBitmap(bitmap);
+                            attacher.update();
+                        }
+                    });
+        }
         return imageView;
     }
 

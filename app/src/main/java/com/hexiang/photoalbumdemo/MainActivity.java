@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 startActivityForResult(new PhotoAlbum(MainActivity.this)
                         .addRemovePaths(list)
+                        .removeExpandType(PhotoAlbum.ExpandType.GIF)
                         .setShowCamera(false)
                         .setLimitCount(1)
                         .setSingleChoiceShowBox(false)

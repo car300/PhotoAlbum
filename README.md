@@ -19,6 +19,7 @@ new PhotoAlbum(MainActivity.this)
                         .addRemovePaths(list)
                         .setLimitCount(3)
                         .startAlbum()
+                        .removeExpandType(PhotoAlbum.ExpandType.GIF)// 忽略GIF图片
                         .subscribe(new Action1<List<String>>() {
                             @Override
                             public void call(List<String> paths) {
