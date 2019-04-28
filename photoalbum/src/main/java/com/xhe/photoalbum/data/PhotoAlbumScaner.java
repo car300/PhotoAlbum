@@ -34,7 +34,8 @@ public class PhotoAlbumScaner {
     private boolean contains(List<String> expandTypes, String filePath) {
         if (expandTypes == null || filePath == null) return false;
         int indexOf = filePath.lastIndexOf(".");
-        String end = filePath.substring(indexOf);
+        if(indexOf == -1) return false;
+        String end = filePath.substring(indexOf);// 获取后缀名
         return expandTypes.contains(end);
     }
 
