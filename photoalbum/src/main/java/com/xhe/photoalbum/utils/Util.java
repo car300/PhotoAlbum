@@ -1,12 +1,16 @@
 package com.xhe.photoalbum.utils;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.opengl.GLES10;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
+
+import com.xhe.photoalbum.BuildConfig;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -28,9 +32,14 @@ public class Util {
 
     public static void startCamera(Activity activity, int requestCode, File outPath) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        Uri uri = Uri.fromFile(outPath);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        activity.startActivityForResult(intent, requestCode);
+        //android 7.0 因为file://引起的FileUriExposedException异常
+        Uri contentUri = FileProvider.getUriForFile(activity, BuildConfig.APPLICATION_ID + ".fileprovider", outPath);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+        try {
+            activity.startActivityForResult(intent, requestCode);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public static String getNowDateTime(String format) {
