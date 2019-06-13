@@ -9,7 +9,7 @@
     <application>
         <provider
             android:name=".PhotoAlbumFileProvider"
-            android:authorities="com.xhe.photoalbum.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
