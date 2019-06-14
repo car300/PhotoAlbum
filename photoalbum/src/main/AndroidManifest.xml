@@ -10,7 +10,16 @@
         <activity
             android:name=".PhotoAlbumActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <provider
+            android:name=".PhotoAlbumFileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/photoalbum_file_path" />
+        </provider>
     </application>
 
 </manifest>

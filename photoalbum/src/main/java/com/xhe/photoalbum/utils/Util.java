@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.opengl.GLES10;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 
 import java.io.File;
@@ -28,7 +29,10 @@ public class Util {
 
     public static void startCamera(Activity activity, int requestCode, File outPath) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        Uri uri = Uri.fromFile(outPath);
+        Uri uri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".fileprovider", outPath);
+//        Uri uri = Uri.fromFile(outPath);
+//        activity.grantUriPermission(activity.getPackageName(),uri,Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         activity.startActivityForResult(intent, requestCode);
     }
