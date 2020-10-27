@@ -3,11 +3,11 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     buildscript {
         dependencies {
-            classpath 'com.android.tools.build:gradle:2.3.3'
-            classpath 'com.novoda:bintray-release:0.5.0'
+            classpath 'com.android.tools.build:gradle:3.3.1'
         }
     }
 }
@@ -19,23 +19,11 @@ allprojects {
     }
     repositories {
         jcenter()
+        google()
     }
     tasks.withType(Javadoc).all { enabled = false }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-ext {
-    compileSdk = 28
-    minSdk = 16
-    targetSdk = 28
-    support = "25.3.1"
-    buildTools = "25.0.2"
-    rxjava = "1.1.9"
-    rxandroid = "1.2.1"
-    rxpermissions = "0.9.3@aar"
-    photoview = "1.2.4"
-    glide = "3.7.0"
 }

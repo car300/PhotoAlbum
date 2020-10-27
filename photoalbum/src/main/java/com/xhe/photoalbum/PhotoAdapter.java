@@ -100,9 +100,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
         holder.cbChecked.setButtonDrawable(ThemeData.getCheckBoxDrawable());
 
         String path = photo.getPath();
-        Glide.with(holder.ivPhoto.getContext())
+        Glide.with(holder.ivPhoto)
                 .load(path)
-                .asBitmap()
                 .into(holder.ivPhoto);
 
         holder.cbChecked.setChecked(photo.isChecked());
